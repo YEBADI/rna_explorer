@@ -1,6 +1,6 @@
 # RNA explorer
 
-**RNA Explorer** (RNA-E) is an Amazon Web Services (AWS) hosted RShiny web application, designed for quick and easy analysis of raw bulk RNA sequencing (RNA-seq) data. Users can upload a CSV file containing raw  gene expression counts data and RNA-E will quickly produce useful detailed tables and visualizations. As RNA-E is hosted on AWS, RNA-E is scalable, secure and efficient.
+**RNA Explorer** (RNA-E) is an Amazon Web Services (AWS) hosted web application, designed for quick and easy analysis of raw bulk RNA sequencing (RNA-seq) data. Users can upload a CSV file containing raw  gene expression counts data and RNA-E will quickly produce useful detailed tables and visualizations. As RNA-E is hosted on AWS, RNA-E is scalable, secure and efficient.
 
 ## Features
 
@@ -12,9 +12,9 @@
 
 ## Technology Stack
 
-- **Frontend:** 
-- **Backend:** 
-- **Data Processing:** 
+- **Frontend:** Flask web framework.
+- **Backend:** Python 3.11.
+- **Data Processing:** Pandas for data manipulation and - for plotting.
 - **Deployment:** AWS (S3 for storage, - for application deployment, - for authentication, - for monitoring)
 - **Version Control:** Git, hosted on GitHub
 
