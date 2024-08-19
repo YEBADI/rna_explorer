@@ -12,10 +12,10 @@
 
 ## Technology Stack
 
-- **Frontend:** React
+- **Frontend:** 
 - **Backend:** Python 3.11 Flask web framework.
-- **Data Processing:** Pandas for data manipulation and - for plotting.
-- **Deployment:** AWS (S3 for storage, - for application deployment, - for authentication, CloudWatch for monitoring)
+- **Data Processing:** Pandas and numpy for data manipulation and matplotlib for plotting.
+- **Deployment:** AWS (S3 for storage, - for application deployment, nginx for authentication, CloudWatch for monitoring)
 - **Version Control:** Git, hosted on GitHub
 
 ## License
