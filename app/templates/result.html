@@ -7,6 +7,7 @@
 </head>
 <body>
     <h2>Gene Expression Results</h2>
-    <img src="{{ image_url }}" alt="Gene Expression Plot">
+    {{ table_html|safe }}
+    <img src="{{ image_url }}" alt="Gene Expression Distribution Plot">
 </body>
 </html>
