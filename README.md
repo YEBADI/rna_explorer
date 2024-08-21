@@ -18,6 +18,23 @@
 - **Deployment:** AWS (S3 for storage, - for application deployment, nginx for authentication, CloudWatch for monitoring)
 - **Version Control:** Git, hosted on GitHub
 
+## Installation
+
+- **Clone the repository:** 
+
+git clone https://github.com/YEBADI/rna_explorer.git
+cd rna_explorer
+
+- **Set up the environment:**
+
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+- **Run the application:**
+
+python app.py
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
