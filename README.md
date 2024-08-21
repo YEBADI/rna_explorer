@@ -22,18 +22,18 @@
 
 - **Clone the repository:** 
 
-git clone https://github.com/YEBADI/rna_explorer.git
-cd rna_explorer
+1. git clone https://github.com/YEBADI/rna_explorer.git
+2. cd rna_explorer
 
 - **Set up the environment:**
 
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+1. python3 -m venv venv
+2. source venv/bin/activate
+3. pip install -r requirements.txt
 
 - **Run the application:**
 
-python app.py
+1. python app.py
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
