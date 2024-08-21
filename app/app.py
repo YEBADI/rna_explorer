@@ -5,16 +5,17 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-
+import seaborn as sns
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
-# Ensure the uploads directory exists
+# Check that the upload directory exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
+# Local test user account
 users = {"oxygen": "pass123"}
 
 @app.route('/')
@@ -46,20 +47,28 @@ def upload():
     return render_template('upload.html')
 
 @app.route('/calculate/<filename>')
+
 def calculate_average(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     df = pd.read_csv(file_path, index_col=0)
-    df2 = np.log2(df + 0.00000000000000000000000001)
+    df2 = np.log2(df + 1e-25)
     gene_means = df2.mean(axis=1)
-    return gene_means.to_frame(name = "Avg Log 2 Gene Expression").to_html()
-    #plt.figure(figsize=(10, 6))
-    #gene_means.plot(kind='bar')
-    #plt.title('Average Gene Expression')
-    #plt.ylabel('Expression Level')
-    #plt.xlabel('Gene')
-    #plt.savefig(os.path.join('static', 'gene_plot.png'))
-    #plt.close()
-    #return render_template('result.html', image_url=url_for('static', filename='gene_plot.png'))
+
+    # Avg log 2 gene expression table
+    table_html = gene_means.to_frame(name="Avg Log 2 Gene Expression").to_html()
+
+    # Distribution histogram plot
+    plt.figure(figsize=(10, 6))
+    sns.histplot(gene_means, kde=True)
+    plt.title('Distribution of Avg Log 2 Gene Expression')
+    plt.xlabel('Avg Log 2 Gene Expression')
+    plt.ylabel('Frequency')
+    plot_path = os.path.join('app', 'static', 'gene_distribution.png')
+    plt.savefig(plot_path)
+    plt.close()
+
+    return render_template('result.html', table_html=table_html, image_url=url_for('static', filename='gene_distribution.png'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
