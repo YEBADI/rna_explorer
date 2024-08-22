@@ -88,7 +88,7 @@ def upload():
 def calculate_average(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     df = pd.read_csv(file_path, index_col=0)
-    df2 = np.log2(df + 1e-25)
+    df2 = np.log2(df + 1)
     gene_means = df2.mean(axis=1)
     gene_means_df = gene_means.reset_index()
     gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']
