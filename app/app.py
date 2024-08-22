@@ -16,7 +16,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Local test user account
-users = {"oxygen": "pass123"}
+# users = {"oxygen": "pass123"}
 
 @app.route('/')
 def index():
@@ -27,11 +27,12 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username in users and users[username] == password:
-            session['username'] = username
-            return redirect(url_for('upload'))
-        else:
-            return "Invalid credentials"
+        # if username in users and users[username] == password:
+        #     session['username'] = username
+        #     return redirect(url_for('upload'))
+        # else:
+        #     return "Invalid credentials"
+        return "Login disabled"  # Temporary placeholder
     return render_template('login.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -47,7 +48,6 @@ def upload():
     return render_template('upload.html')
 
 @app.route('/calculate/<filename>')
-
 def calculate_average(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     df = pd.read_csv(file_path, index_col=0)
