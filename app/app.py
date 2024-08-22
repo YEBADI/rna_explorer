@@ -87,11 +87,13 @@ def upload():
 @login_required
 def calculate_average(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    df = pd.read_csv(file_path, index_col=0)
+    df = pd.read_csv(file_path, index_col=0)  # Keep the gene symbols as the index
     df2 = np.log2(df + 1)
     gene_means = df2.mean(axis=1)
     gene_means_df = gene_means.reset_index()
-    gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']
+    gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']  # Set the correct column names
+
+    data = gene_means_df.to_dict(orient='records')  # Convert to list of dictionaries
 
     plt.figure(figsize=(10, 6))
     sns.histplot(gene_means, kde=True)
@@ -103,7 +105,7 @@ def calculate_average(filename):
     plt.savefig(plot_path)
     plt.close()
 
-    return render_template('result.html', gene_means_df=gene_means_df, image_url=url_for('static', filename='gene_distribution.png'))
+    return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'))
 
 if __name__ == '__main__':
     with app.app_context():
