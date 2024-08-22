@@ -29,22 +29,7 @@
             <div class="col-md-6">
                 <h4>Average Log 2 Gene Expression</h4>
                 <div class="table-container">
-                    <table id="resultsTable" class="display">
-                        <thead>
-                            <tr>
-                                <th>SYMBOL</th>
-                                <th>Mean Log 2 Gene Expression</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in data %}
-                                <tr>
-                                    <td>{{ row.symbol }}</td>
-                                    <td>{{ row.mean_log2_expression }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {{ table_html | safe }}
                 </div>
             </div>
             <div class="col-md-6">
@@ -54,13 +39,11 @@
         </div>
         <a href="/upload" class="btn btn-primary mt-4">Upload Another File</a>
     </div>
+
     <script>
         $(document).ready(function() {
-            setTimeout(function() {
-                $('#resultsTable').DataTable();
-            }, 500); // Wait 500ms before initializing DataTable
+            $('#resultsTable').DataTable();
         });
     </script>
 </body>
 </html>
-
