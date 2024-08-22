@@ -95,7 +95,7 @@ def calculate_average(filename):
 
     data = gene_means_df.to_dict(orient='records')  # Convert to list of dictionaries
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(15, 10))
     sns.histplot(gene_means, kde=True)
     plt.title('Distribution of Avg Log 2 Gene Expression')
     plt.xlabel('Avg Log 2 Gene Expression')
