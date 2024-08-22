@@ -21,4 +21,6 @@ jobs:
           git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
+          echo "export SECRET_KEY=${{ secrets.SECRET_KEY }}" >> ~/.bashrc
+          source ~/.bashrc
           sudo systemctl restart rna_explorer.service
