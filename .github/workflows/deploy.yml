@@ -1,0 +1,24 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /home/ec2-user/rna_explorer
+          git pull origin main
+          source venv/bin/activate
+          pip install -r requirements.txt
+          sudo systemctl restart your-app-service
