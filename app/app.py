@@ -91,9 +91,7 @@ def calculate_average(filename):
     df2 = np.log2(df + 1)
     gene_means = df2.mean(axis=1)
     gene_means_df = gene_means.reset_index()
-    gene_means_df.columns = ['Gene Symbol |', 'Mean Log2 Gene Expression']
-    table_html = gene_means_df.to_html(index=False)
-    #table_html = result_df.to_frame(name="Table of Avg Log2 Gene Expression").to_html()
+    gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']
 
     plt.figure(figsize=(10, 6))
     sns.histplot(gene_means, kde=True)
@@ -105,7 +103,7 @@ def calculate_average(filename):
     plt.savefig(plot_path)
     plt.close()
 
-    return render_template('result.html', table_html=table_html, image_url=url_for('static', filename='gene_distribution.png'))
+    return render_template('result.html', gene_means_df=gene_means_df, image_url=url_for('static', filename='gene_distribution.png'))
 
 if __name__ == '__main__':
     with app.app_context():
