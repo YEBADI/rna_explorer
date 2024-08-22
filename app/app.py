@@ -69,6 +69,5 @@ def calculate_average(filename):
 
     return render_template('result.html', table_html=table_html, image_url=url_for('static', filename='gene_distribution.png'))
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
