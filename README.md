@@ -4,20 +4,20 @@
 
 ## Features
 
-- **CSV File Upload:** Upload raw bulk RNA-seq data in CSV format.
+- **CSV File Upload:** Upload raw bulk RNA-seq data in CSV format (samples as columns, genes as rows).
 - **Data Table:** View processed gene expression data in easy to use tables.
-- **Data Visualization:** Plot nice and clear graphs to explore gene expression.
-- **AWS Integration:** RNA-E leverages AWS for data storage, computation, and deployment to provide a robust and scalable web app solution.
+- **Data Visualization:** View nice and clear graphs to explore gene expression.
+- **AWS Integration:** RNA-E leverages AWS for data storage, computation, and deployment to provide a robust and scalable web-app solution for on-the-go bioinformatics.
 - **CI/CD** RNA_E has CI/CD implemented, meaning pushes to main are deployed on AWS.
 - **User Authentication:** RNA-E has integrity - with a secure login system to protect data and maintain privacy.
 
 ## Technology Stack
 
-- **Frontend:** 
-- **Backend:** Python 3.11 Flask web framework.
-- **Data Processing:** Pandas and numpy for data manipulation and matplotlib for plotting.
-- **Deployment:** AWS (S3 for storage, - for application deployment, nginx for authentication, CloudWatch for monitoring)
-- **Version Control:** Git, hosted on GitHub
+- **Frontend:** Bootstrap CSS framework (https://getbootstrap.com/).
+- **Backend:** Python 3.9 Flask 3.0.3 web framework.
+- **Data Processing:** Pandas 2.2.2 and numpy 2.0.1 for data manipulation and matplotlib 3.9.2 and Seaborn 0.13.2 for plotting.
+- **Deployment:** AWS for application deployment, Flask-SQLAlchemy 3.1.1 SQLite based Flask-login 0.6.3 for authentication, CloudWatch for monitoring.
+- **Version Control:** Git, hosted on GitHub with CI/CD implemented via GitHub Actions.
 
 ## Installation
 
