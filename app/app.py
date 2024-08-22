@@ -90,11 +90,10 @@ def calculate_average(filename):
     df = pd.read_csv(file_path, index_col=0)
     df2 = np.log2(df + 1e-25)
     gene_means = df2.mean(axis=1)
-    result_df = pd.DataFrame({
-    'Gene Symbol': gene_means.index,
-    'Mean Log2 Gene Expression': gene_means.values
-    }) 
-    table_html = result_df.to_frame(name="Table of Avg Log2 Gene Expression").to_html()
+    gene_means_df = gene_means.reset_index()
+    gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']
+    table_html = gene_means_df.to_html(index=False)
+    #table_html = result_df.to_frame(name="Table of Avg Log2 Gene Expression").to_html()
 
     plt.figure(figsize=(10, 6))
     sns.histplot(gene_means, kde=True)
