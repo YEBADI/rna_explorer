@@ -27,11 +27,11 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-         if username in users and users[username] == password:
-             session['username'] = username
-             return redirect(url_for('upload'))
-         else:
-             return "Invalid credentials"
+        if username in users and users[username] == password:
+            session['username'] = username
+            return redirect(url_for('upload'))
+        else:
+            return "Invalid credentials"
     return render_template('login.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
