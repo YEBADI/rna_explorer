@@ -7,7 +7,8 @@
 - **CSV File Upload:** Upload raw bulk RNA-seq data in CSV format.
 - **Data Table:** View processed gene expression data in easy to use tables.
 - **Data Visualization:** Plot nice and clear graphs to explore gene expression.
-- **AWS Integration:** RNA-E leverages AWS for storage, computation, and deployment to provide a robust and scalable web app solution.
+- **AWS Integration:** RNA-E leverages AWS for data storage, computation, and deployment to provide a robust and scalable web app solution.
+- ** CI/CD ** RNA_E has CI/CD implemented, meaning pushes to main are deployed on AWS.
 - **User Authentication:** RNA-E has integrity - with a secure login system to protect data and maintain privacy.
 
 ## Technology Stack
