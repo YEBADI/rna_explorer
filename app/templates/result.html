@@ -37,10 +37,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for index, value in gene_means_df.iterrows() %}
+                            {% for row in data %}
                                 <tr>
-                                    <td>{{ index }}</td>
-                                    <td>{{ value['Mean Log2 Gene Expression'] }}</td>
+                                    <td>{{ row['Gene Symbol'] }}</td>
+                                    <td>{{ row['Mean Log2 Gene Expression'] }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
