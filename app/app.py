@@ -97,13 +97,13 @@ def calculate_average(filename):
 
     plt.figure(figsize=(30, 20))
     sns.histplot(gene_means, kde=True, bins=30)
-    plt.title('Distribution of Avg Log 2 Gene Expression', fontsize=20)
-    plt.xlabel('Avg Log 2 Gene Expression', fontsize=16)
-    plt.ylabel('Log Frequency', fontsize=16)
+    plt.title('Distribution of Avg Log 2 Gene Expression', fontsize=50)
+    plt.xlabel('Avg Log 2 Gene Expression', fontsize=35)
+    plt.ylabel('Log Frequency', fontsize=35)
     plt.yscale('log')
     
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.xticks(fontsize=30)
+    plt.yticks(fontsize=30)
     
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     
