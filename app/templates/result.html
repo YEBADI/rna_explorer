@@ -36,6 +36,9 @@
                     <span class="nav-link">Logged in as: {{ current_user.username }}</span>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('previous_runs') }}">Previous Runs</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </li>
                 {% else %}
@@ -51,6 +54,7 @@
         <div class="d-flex justify-content-between mb-4">
             <a href="/upload" class="btn btn-primary">Upload Another File</a>
             <a href="{{ download_url }}" class="btn btn-success">Download Results</a>
+            <a href="{{ url_for('previous_runs') }}" class="btn btn-info">Previous Runs</a>
         </div>
 
         <h2 class="mb-4">Gene Expression Results</h2>
