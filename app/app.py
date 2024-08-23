@@ -9,7 +9,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import uuid
+import io
+import uuid  # To generate unique file names
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
@@ -79,11 +80,8 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         if file and file.filename.endswith('.csv'):
-            unique_filename = f"{current_user.username}_{uuid.uuid4().hex}_{file.filename}"
-            user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
-            if not os.path.exists(user_directory):
-                os.makedirs(user_directory)
-            file_path = os.path.join(user_directory, unique_filename)
+            unique_filename = f"{uuid.uuid4()}_{file.filename}"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
             file.save(file_path)
             return redirect(url_for('calculate_average', filename=unique_filename))
         else:
@@ -94,9 +92,12 @@ def upload():
 @app.route('/calculate/<filename>')
 @login_required
 def calculate_average(filename):
-    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
-    file_path = os.path.join(user_directory, filename)
-    df = pd.read_csv(file_path, index_col=0)  # Keep the gene symbols as the index
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if not os.path.exists(file_path):
+        flash('File not found. Please try uploading again.')
+        return redirect(url_for('upload'))
+
+    df = pd.read_csv(file_path, index_col=0)
     df2 = np.log2(df + 1)
     gene_means = df2.mean(axis=1)
     gene_means_df = gene_means.reset_index()
@@ -110,24 +111,31 @@ def calculate_average(filename):
     plt.xlabel('Avg Log 2 Gene Expression', fontsize=35)
     plt.ylabel('Log Frequency', fontsize=35)
     plt.yscale('log')
+    
     plt.xticks(fontsize=30)
     plt.yticks(fontsize=30)
+    
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    
     plot_path = os.path.join('app', 'static', 'gene_distribution.png')
     plt.savefig(plot_path, bbox_inches='tight') 
     plt.close()
 
-    results_csv_path = os.path.join(user_directory, f'gene_expression_results_{uuid.uuid4().hex}.csv')
+    results_csv_filename = f"{uuid.uuid4()}_gene_expression_results.csv"
+    results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], results_csv_filename)
     gene_means_df.to_csv(results_csv_path, index=False)
 
-    return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'))
+    return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'), download_url=url_for('download_results', filename=results_csv_filename))
 
 @app.route('/download/<filename>')
 @login_required
 def download_results(filename):
-    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
-    file_path = os.path.join(user_directory, filename)
-    return send_file(file_path, as_attachment=True, download_name=filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name=filename)
+    else:
+        flash('The requested file does not exist.')
+        return redirect(url_for('upload'))
 
 if __name__ == '__main__':
     with app.app_context():
