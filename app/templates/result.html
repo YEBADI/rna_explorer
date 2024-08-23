@@ -50,7 +50,6 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between mb-4">
             <a href="/upload" class="btn btn-primary">Upload Another File</a>
-            <!-- Use the dynamic download URL provided by the server -->
             <a href="{{ download_url }}" class="btn btn-success">Download Results</a>
         </div>
 
@@ -74,4 +73,30 @@
                                     <td>{{ row['Mean Log2 Gene Expression'] }}</td>
                                 </tr>
                             {% endfor %}
-           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <h4>Distribution Plot</h4>
+                <img src="{{ image_url }}" class="custom-image" alt="Gene Expression Distribution Plot">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            if ($('#resultsTable tbody tr').length > 0) {
+                $('#resultsTable').DataTable({
+                    "paging": true,
+                    "searching": true,
+                    "ordering": true,
+                    "lengthMenu": [10, 25, 50, 100]
+                });
+            } else {
+                console.error("No data available in the table for DataTable initialization.");
+            }
+        });
+    </script>
+</body>
+</html>
