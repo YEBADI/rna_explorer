@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import io
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
@@ -46,7 +46,7 @@ def register():
         if User.query.filter_by(username=username).first():
             flash('Username already exists')
             return redirect(url_for('register'))
-        new_user = User(username=username, password=password)  # Hash password in production!
+        new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
         flash('Account created successfully')
@@ -79,22 +79,30 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         if file and file.filename.endswith('.csv'):
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            unique_filename = f"{current_user.username}_{uuid.uuid4().hex}_{file.filename}"
+            user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+            if not os.path.exists(user_directory):
+                os.makedirs(user_directory)
+            file_path = os.path.join(user_directory, unique_filename)
             file.save(file_path)
-            return redirect(url_for('calculate_average', filename=file.filename))
+            return redirect(url_for('calculate_average', filename=unique_filename))
+        else:
+            flash('Invalid file type. Please upload a CSV file.')
+            return redirect(url_for('upload'))
     return render_template('upload.html')
 
 @app.route('/calculate/<filename>')
 @login_required
 def calculate_average(filename):
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+    file_path = os.path.join(user_directory, filename)
     df = pd.read_csv(file_path, index_col=0)  # Keep the gene symbols as the index
     df2 = np.log2(df + 1)
     gene_means = df2.mean(axis=1)
     gene_means_df = gene_means.reset_index()
-    gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']  # Set the correct column names
+    gene_means_df.columns = ['Gene Symbol', 'Mean Log2 Gene Expression']
 
-    data = gene_means_df.to_dict(orient='records')  # Convert to list of dictionaries
+    data = gene_means_df.to_dict(orient='records')
 
     plt.figure(figsize=(30, 20))
     sns.histplot(gene_means, kde=True, bins=30)
@@ -102,26 +110,24 @@ def calculate_average(filename):
     plt.xlabel('Avg Log 2 Gene Expression', fontsize=35)
     plt.ylabel('Log Frequency', fontsize=35)
     plt.yscale('log')
-    
     plt.xticks(fontsize=30)
     plt.yticks(fontsize=30)
-    
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-    
     plot_path = os.path.join('app', 'static', 'gene_distribution.png')
     plt.savefig(plot_path, bbox_inches='tight') 
     plt.close()
 
-    results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gene_expression_results.csv')
+    results_csv_path = os.path.join(user_directory, f'gene_expression_results_{uuid.uuid4().hex}.csv')
     gene_means_df.to_csv(results_csv_path, index=False)
 
     return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'))
 
-@app.route('/download')
+@app.route('/download/<filename>')
 @login_required
-def download_results():
-    results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gene_expression_results.csv')
-    return send_file(results_csv_path, as_attachment=True, download_name='gene_expression_results.csv')
+def download_results(filename):
+    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+    file_path = os.path.join(user_directory, filename)
+    return send_file(file_path, as_attachment=True, download_name=filename)
 
 if __name__ == '__main__':
     with app.app_context():
