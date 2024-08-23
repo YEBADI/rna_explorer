@@ -95,14 +95,20 @@ def calculate_average(filename):
 
     data = gene_means_df.to_dict(orient='records')  # Convert to list of dictionaries
 
-    plt.figure(figsize=(15, 10))
-    sns.histplot(gene_means, kde=True)
-    plt.title('Distribution of Avg Log 2 Gene Expression')
-    plt.xlabel('Avg Log 2 Gene Expression')
-    plt.ylabel('Log Frequency')
+    plt.figure(figsize=(30, 20))
+    sns.histplot(gene_means, kde=True, bins=30)
+    plt.title('Distribution of Avg Log 2 Gene Expression', fontsize=20)
+    plt.xlabel('Avg Log 2 Gene Expression', fontsize=16)
+    plt.ylabel('Log Frequency', fontsize=16)
     plt.yscale('log')
+    
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    
     plot_path = os.path.join('app', 'static', 'gene_distribution.png')
-    plt.savefig(plot_path)
+    plt.savefig(plot_path, bbox_inches='tight') 
     plt.close()
 
     return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'))
