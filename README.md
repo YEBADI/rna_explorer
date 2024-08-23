@@ -13,7 +13,7 @@
 
 ## Technology Stack
 
-- **Frontend:** Bootstrap CSS framework (https://getbootstrap.com/).
+- **Frontend:** Bootstrap CSS framework (https://getbootstrap.com/) and DataTables Javascript HTML table library (https://datatables.net/).
 - **Backend:** Python 3.9 Flask 3.0.3 web framework.
 - **Data Processing:** Pandas 2.2.2 and numpy 2.0.1 for data manipulation and matplotlib 3.9.2 and Seaborn 0.13.2 for plotting.
 - **Deployment:** AWS for application deployment, Flask-SQLAlchemy 3.1.1 SQLite based Flask-login 0.6.3 for authentication, CloudWatch for monitoring.
@@ -34,7 +34,7 @@
 
 - **Run the application:**
 
-1. python app.py
+1. python app/app.py
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
