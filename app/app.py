@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
@@ -9,6 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import io
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
@@ -111,7 +112,16 @@ def calculate_average(filename):
     plt.savefig(plot_path, bbox_inches='tight') 
     plt.close()
 
+    results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gene_expression_results.csv')
+    gene_means_df.to_csv(results_csv_path, index=False)
+
     return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'))
+
+@app.route('/download')
+@login_required
+def download_results():
+    results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gene_expression_results.csv')
+    return send_file(results_csv_path, as_attachment=True, download_name='gene_expression_results.csv')
 
 if __name__ == '__main__':
     with app.app_context():
