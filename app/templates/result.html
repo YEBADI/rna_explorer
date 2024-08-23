@@ -50,7 +50,8 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between mb-4">
             <a href="/upload" class="btn btn-primary">Upload Another File</a>
-            <a href="{{ url_for('download_results', filename='gene_expression_results.csv') }}" class="btn btn-success">Download Results</a>
+            <!-- Use the dynamic download URL provided by the server -->
+            <a href="{{ download_url }}" class="btn btn-success">Download Results</a>
         </div>
 
         <h2 class="mb-4">Gene Expression Results</h2>
@@ -73,26 +74,4 @@
                                     <td>{{ row['Mean Log2 Gene Expression'] }}</td>
                                 </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <h4>Distribution Plot</h4>
-                <img src="{{ image_url }}" class="custom-image" alt="Gene Expression Distribution Plot">
-            </div>
-        </div>
-    </div>
-
-    <script>
-        $(document).ready(function() {
-            $('#resultsTable').DataTable({
-                "paging": true,
-                "searching": true,
-                "ordering": true,
-                "lengthMenu": [10, 25, 50, 100]
-            });
-        });
-    </script>
-</body>
-</html>
+           
