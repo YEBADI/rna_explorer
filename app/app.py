@@ -13,25 +13,38 @@ import io
 import uuid
 from datetime import datetime
 
+# Initialize the Flask app
 app = Flask(__name__)
+
+# Set secret key for session management
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+
+# Set the upload folder path
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+
+# Configure the SQLite database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+# Disable SQLAlchemy event notifications to save resources
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Ensure the upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
+# Initialize the database and login manager
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+# Define the User model
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
+# Define the Run model to track user uploads and results
 class Run(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -40,14 +53,17 @@ class Run(db.Model):
     plot_path = db.Column(db.String(150), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+# User loader callback for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Redirect root URL to the login page
 @app.route('/')
 def index():
     return redirect(url_for('login'))
 
+# User registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -63,6 +79,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html')
 
+# User login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -77,12 +94,14 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
+# User logout route
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
+# File upload route
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
@@ -98,20 +117,24 @@ def upload():
             return redirect(url_for('upload'))
     return render_template('upload.html')
 
+# Calculate and display results for the uploaded file
 @app.route('/calculate/<filename>')
 @login_required
 def calculate_average(filename):
+    # Check if the run already exists in the database
     run = Run.query.filter_by(user_id=current_user.id, filename=filename).first()
-    if run:  # If the run exists, just display the results
+    if run:
+        # If run exists, display the saved results and plot
         data = pd.read_csv(run.results_path).to_dict(orient='records')
         return render_template('result.html', data=data, image_url=url_for('static', filename=run.plot_path.split('/')[-1]), download_url=url_for('download_results', filename=run.results_path.split('/')[-1]))
 
-    # If not found in the database, proceed with calculations (only if it's a new run)
+    # If the run doesn't exist, process the uploaded file
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if not os.path.exists(file_path):
         flash('File not found. Please try uploading again.')
         return redirect(url_for('upload'))
 
+    # Perform the calculations and generate the plot
     df = pd.read_csv(file_path, index_col=0)
     df2 = np.log2(df + 1)
     gene_means = df2.mean(axis=1)
@@ -142,13 +165,14 @@ def calculate_average(filename):
     results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], results_csv_filename)
     gene_means_df.to_csv(results_csv_path, index=False)
 
-    # Save the run information to the database
+    # Save the new run details in the database
     run = Run(user_id=current_user.id, filename=filename, results_path=results_csv_path, plot_path=plot_path)
     db.session.add(run)
     db.session.commit()
 
     return render_template('result.html', data=data, image_url=url_for('static', filename=plot_filename), download_url=url_for('download_results', filename=results_csv_filename))
 
+# Route for downloading the results CSV
 @app.route('/download/<filename>')
 @login_required
 def download_results(filename):
@@ -159,12 +183,14 @@ def download_results(filename):
         flash('The requested file does not exist.')
         return redirect(url_for('upload'))
 
+# Route to view previous runs by the logged-in user
 @app.route('/previous_runs')
 @login_required
 def previous_runs():
     runs = Run.query.filter_by(user_id=current_user.id).order_by(Run.timestamp.desc()).all()
     return render_template('previous_runs.html', runs=runs)
 
+# Run the application
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
