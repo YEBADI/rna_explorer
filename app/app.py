@@ -50,7 +50,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
+    if request.method == 'POST']:
         username = request.form['username']
         password = request.form['password']
         if User.query.filter_by(username=username).first():
@@ -65,7 +65,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+    if request.method == 'POST']:
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username, password=password).first()
@@ -101,6 +101,12 @@ def upload():
 @app.route('/calculate/<filename>')
 @login_required
 def calculate_average(filename):
+    run = Run.query.filter_by(user_id=current_user.id, filename=filename).first()
+    if run:  # If the run exists, just display the results
+        data = pd.read_csv(run.results_path).to_dict(orient='records')
+        return render_template('result.html', data=data, image_url=url_for('static', filename=run.plot_path.split('/')[-1]), download_url=url_for('download_results', filename=run.results_path.split('/')[-1]))
+
+    # If not found in the database, proceed with calculations (only if it's a new run)
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if not os.path.exists(file_path):
         flash('File not found. Please try uploading again.')
