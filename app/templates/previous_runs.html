@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        .custom-table {
+            height: 400px;
+            overflow-y: auto;
+        }
+        .custom-table table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -36,26 +48,28 @@
             <a href="/upload" class="btn btn-primary">Upload Another File</a>
         </div>
 
-        <table id="previousRunsTable" class="table table-bordered display">
-            <thead>
-                <tr>
-                    <th>Run Date</th>
-                    <th>Filename</th>
-                    <th>View Results</th>
-                    <th>Download Results</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for run in runs %}
-                <tr>
-                    <td>{{ run.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td>{{ run.filename }}</td>
-                    <td><a href="{{ url_for('calculate_average', filename=run.filename) }}" class="btn btn-primary">View</a></td>
-                    <td><a href="{{ url_for('download_results', filename=run.results_path) }}" class="btn btn-success">Download</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="custom-table">
+            <table id="previousRunsTable" class="table table-bordered display">
+                <thead>
+                    <tr>
+                        <th>Run Date</th>
+                        <th>Filename</th>
+                        <th>View Results</th>
+                        <th>Download Results</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for run in runs %}
+                    <tr>
+                        <td>{{ run.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>{{ run.filename }}</td>
+                        <td><a href="{{ url_for('download_results', filename=run.results_path) }}" class="btn btn-primary">View</a></td>
+                        <td><a href="{{ url_for('download_results', filename=run.results_path) }}" class="btn btn-success">Download</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
