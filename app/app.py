@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import io
-import uuid  # To generate unique file names
+import uuid
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
@@ -30,6 +31,16 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+
+class UserRun(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    results_path = db.Column(db.String(255), nullable=False)
+    plot_path = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref=db.backref('runs', lazy=True))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -117,7 +128,8 @@ def calculate_average(filename):
     
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     
-    plot_path = os.path.join('app', 'static', 'gene_distribution.png')
+    plot_filename = f"{uuid.uuid4()}_gene_distribution.png"
+    plot_path = os.path.join('app', 'static', plot_filename)
     plt.savefig(plot_path, bbox_inches='tight') 
     plt.close()
 
@@ -125,7 +137,12 @@ def calculate_average(filename):
     results_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], results_csv_filename)
     gene_means_df.to_csv(results_csv_path, index=False)
 
-    return render_template('result.html', data=data, image_url=url_for('static', filename='gene_distribution.png'), download_url=url_for('download_results', filename=results_csv_filename))
+    # Save the run information to the database
+    new_run = UserRun(user_id=current_user.id, filename=filename, results_path=results_csv_path, plot_path=plot_path)
+    db.session.add(new_run)
+    db.session.commit()
+
+    return render_template('result.html', data=data, image_url=url_for('static', filename=plot_filename), download_url=url_for('download_results', filename=results_csv_filename))
 
 @app.route('/download/<filename>')
 @login_required
@@ -136,6 +153,12 @@ def download_results(filename):
     else:
         flash('The requested file does not exist.')
         return redirect(url_for('upload'))
+
+@app.route('/previous_runs')
+@login_required
+def previous_runs():
+    runs = UserRun.query.filter_by(user_id=current_user.id).order_by(UserRun.timestamp.desc()).all()
+    return render_template('previous_runs.html', runs=runs)
 
 if __name__ == '__main__':
     with app.app_context():
