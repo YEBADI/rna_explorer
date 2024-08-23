@@ -9,7 +9,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">RNA Explorer</a>
+        <a class="navbar-brand" href="{{ url_for('previous_runs') }}">RNA Explorer</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
@@ -29,7 +29,11 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="mb-4">Upload CSV File</h2>
+        <div class="d-flex justify-content-between mb-4">
+            <h2 class="mb-4">Upload CSV File</h2>
+            <a href="{{ url_for('previous_runs') }}" class="btn btn-info">Previous Runs</a>
+        </div>
+
         {% with messages = get_flashed_messages() %}
           {% if messages %}
             <div class="alert alert-warning">
@@ -37,6 +41,7 @@
             </div>
           {% endif %}
         {% endwith %}
+
         <form action="/upload" method="POST" enctype="multipart/form-data" class="form-group">
             <div class="mb-3">
                 <label for="file" class="form-label">Choose file:</label>
