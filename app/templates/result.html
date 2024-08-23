@@ -50,7 +50,7 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between mb-4">
             <a href="/upload" class="btn btn-primary">Upload Another File</a>
-            <a href="/download" class="btn btn-success">Download Results</a>
+            <a href="{{ url_for('download_results', filename='gene_expression_results.csv') }}" class="btn btn-success">Download Results</a>
         </div>
 
         <h2 class="mb-4">Gene Expression Results</h2>
