@@ -32,15 +32,13 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
-class UserRun(db.Model):
+class Run(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    filename = db.Column(db.String(255), nullable=False)
-    results_path = db.Column(db.String(255), nullable=False)
-    plot_path = db.Column(db.String(255), nullable=False)
+    filename = db.Column(db.String(150), nullable=False)
+    results_path = db.Column(db.String(150), nullable=False)
+    plot_path = db.Column(db.String(150), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    user = db.relationship('User', backref=db.backref('runs', lazy=True))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -116,6 +114,9 @@ def calculate_average(filename):
 
     data = gene_means_df.to_dict(orient='records')
 
+    plot_filename = f"{uuid.uuid4()}_gene_distribution.png"
+    plot_path = os.path.join('app', 'static', plot_filename)
+    
     plt.figure(figsize=(30, 20))
     sns.histplot(gene_means, kde=True, bins=30)
     plt.title('Distribution of Avg Log 2 Gene Expression', fontsize=50)
@@ -128,8 +129,6 @@ def calculate_average(filename):
     
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     
-    plot_filename = f"{uuid.uuid4()}_gene_distribution.png"
-    plot_path = os.path.join('app', 'static', plot_filename)
     plt.savefig(plot_path, bbox_inches='tight') 
     plt.close()
 
@@ -138,8 +137,8 @@ def calculate_average(filename):
     gene_means_df.to_csv(results_csv_path, index=False)
 
     # Save the run information to the database
-    new_run = UserRun(user_id=current_user.id, filename=filename, results_path=results_csv_path, plot_path=plot_path)
-    db.session.add(new_run)
+    run = Run(user_id=current_user.id, filename=filename, results_path=results_csv_path, plot_path=plot_path)
+    db.session.add(run)
     db.session.commit()
 
     return render_template('result.html', data=data, image_url=url_for('static', filename=plot_filename), download_url=url_for('download_results', filename=results_csv_filename))
@@ -157,7 +156,7 @@ def download_results(filename):
 @app.route('/previous_runs')
 @login_required
 def previous_runs():
-    runs = UserRun.query.filter_by(user_id=current_user.id).order_by(UserRun.timestamp.desc()).all()
+    runs = Run.query.filter_by(user_id=current_user.id).order_by(Run.timestamp.desc()).all()
     return render_template('previous_runs.html', runs=runs)
 
 if __name__ == '__main__':
