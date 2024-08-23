@@ -31,12 +31,10 @@
                     <span class="nav-link">Logged in as: {{ current_user.username }}</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                </li>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-                </li>
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -49,7 +47,7 @@
         </div>
 
         <div class="custom-table">
-            <table id="previousRunsTable" class="table table-bordered display">
+            <table id="previousRunsTable" class="display">
                 <thead>
                     <tr>
                         <th>Run Date</th>
@@ -63,8 +61,8 @@
                     <tr>
                         <td>{{ run.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                         <td>{{ run.filename }}</td>
-                        <td><a href="{{ url_for('download_results', filename=run.results_path) }}" class="btn btn-primary">View</a></td>
-                        <td><a href="{{ url_for('download_results', filename=run.results_path) }}" class="btn btn-success">Download</a></td>
+                        <td><a href="{{ url_for('calculate_average', filename=run.filename) }}" class="btn btn-primary">View</a></td>
+                        <td><a href="{{ url_for('download_results', filename=run.results_path.split('/')[-1]) }}" class="btn btn-success">Download</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
