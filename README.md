@@ -2,6 +2,8 @@
 
 **RNA Explorer** (RNA-E) is an Amazon Web Services (AWS) hosted web application, designed for quick and easy analysis of raw bulk RNA sequencing (RNA-seq) data. Users can upload a CSV file containing raw  gene expression counts data and RNA-E will quickly produce useful detailed tables and visualizations. As RNA-E is hosted on AWS, RNA-E is scalable, secure and efficient and, in its current state, can handle 10-20 concurrent users.
 
+![alt text](https://github.com/YEBADI/rna_explorer/blob/main/aws_architecture_for_flask_app.png)
+
 ## Features
 
 - **CSV File Upload:** Upload raw bulk RNA-seq data in CSV format (samples as columns, genes as rows).
